@@ -137,15 +137,6 @@ info:
     POST /policy/initiate
     Content-Type: application/json
 
-    {
-      "name": "RODRIGO",
-      "firstSurname": "PEREZ",
-      "secondSurname": "LOPEZ",
-      "birthDate": "29/08/1988",
-      "phone1": "5555555555",
-      "email": "mcoria@segurosargos.com",
-      "occupationId": "1"
-    }
     ```
 
     **Response:**
