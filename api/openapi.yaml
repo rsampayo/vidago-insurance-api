@@ -5,8 +5,181 @@ info:
   title: Vidago Insurance Middleware API
   version: 1.0.3
   description: >
-    Middleware API for interacting with Argos Insurance services, handling
-    multi-step policy registration.
+    # Vidago Insurance Middleware API
+
+    Welcome to the Vidago Insurance Middleware API documentation. This API serves as a bridge between your applications and Argos Insurance services, facilitating a seamless and secure multi-step policy registration process.
+
+    ## Overview
+
+    The Vidago Insurance Middleware API allows you to:
+
+    - **Initiate Policy Registration:** Start a new insurance policy registration session.
+    - **Submit Policy Details:** Provide necessary information across multiple steps to complete the policy registration.
+    - **Process Policy:** Finalize the policy registration and receive a policy folio number.
+    - **Retrieve Policy Information:** Access submitted policy details at any step.
+    - **Access Catalogs:** Retrieve various catalogs such as occupations, payment methods, and more to support form data validation and population.
+    - **Manage Payments:** Handle payment-related operations associated with policy registrations.
+
+    ## Getting Started
+
+    ### Base URL
+
+    The API is accessible at the following base URL:
+    ```
+    http://vidago.ramonsampayo.com
+    ```
+
+    ### Authentication
+
+    Currently, the API does not enforce authentication. However, it is recommended to implement security measures such as API keys or OAuth in production environments to protect sensitive data.
+
+    ### Content Type
+
+    All request and response bodies use the `application/json` content type.
+
+    ## Endpoints
+
+    ### Policy Registration
+
+    - **Initiate Policy Registration**
+      - **Endpoint:** `POST /policy/initiate`
+      - **Description:** Starts a new policy registration session and returns a unique `policyId`.
+      - **Response:** 
+        - `201 Created` with `policyId` in the response body.
+
+    - **Submit Policy Steps**
+      - **Endpoints:** 
+        - `PATCH /policy/{policyId}/step/1`
+        - `PATCH /policy/{policyId}/step/2`
+        - `PATCH /policy/{policyId}/step/3`
+        - `PATCH /policy/{policyId}/step/4`
+        - `PATCH /policy/{policyId}/step/5`
+        - `PATCH /policy/{policyId}/step/6`
+        - `PATCH /policy/{policyId}/step/7`
+      - **Description:** Submit data for each respective step of the policy registration process.
+      - **Parameters:** 
+        - `policyId` (path parameter) – The unique identifier for the policy registration session.
+      - **Request Body:** JSON object containing the required fields for each step.
+      - **Response:** 
+        - `200 OK` with a success message or relevant data.
+
+    - **Process Policy**
+      - **Endpoint:** `PATCH /policy/{policyId}/process`
+      - **Description:** Finalizes the policy registration and returns the `policyFolio` number upon successful processing.
+      - **Parameters:** 
+        - `policyId` (path parameter) – The unique identifier for the policy registration session.
+      - **Response:** 
+        - `200 OK` with `policyFolio` in the response body.
+
+    ### Policy Retrieval
+
+    - **Get Policy Steps**
+      - **Endpoint:** `GET /policy/{policyId}/steps`
+      - **Description:** Retrieves the data submitted for Steps 1 to 5 of the policy registration process.
+      - **Parameters:** 
+        - `policyId` (path parameter) – The unique identifier for the policy registration session.
+      - **Response:** 
+        - `200 OK` with the aggregated data for steps 1 to 5.
+
+    ### Catalogs
+
+    - **Get Occupations List**
+      - **Endpoint:** `GET /getOccupations`
+      - **Description:** Retrieves a list of available occupations.
+      - **Response:** 
+        - `200 OK` with an array of occupations.
+
+    - **Get Catalogs**
+      - **Endpoint:** `GET /getCatalogs`
+      - **Description:** Returns a list of available catalogs based on the specified `catalogType`.
+      - **Parameters:** 
+        - `catalogType` (query parameter) – Type of catalog to retrieve (e.g., `PARTICIPATING_BANKS`, `COUNTRIES`).
+      - **Response:** 
+        - `200 OK` with the requested catalog data.
+
+    - **Get Plans**
+      - **Endpoint:** `GET /getPlans`
+      - **Description:** Retrieves a list of available insurance plans.
+      - **Response:** 
+        - `200 OK` with an array of insurance plans.
+
+    ### Payments
+
+    - **Submit Billing Information**
+      - **Endpoint:** `PATCH /policy/{policyId}/step/7`
+      - **Description:** Submits billing information for the policy registration process.
+      - **Parameters:** 
+        - `policyId` (path parameter) – The unique identifier for the policy registration session.
+      - **Request Body:** JSON object containing billing details.
+      - **Response:** 
+        - `200 OK` with billing operation details.
+
+    ## Usage Guidelines
+
+    - **Data Validation:** Ensure all required fields are provided and adhere to the specified formats and constraints to avoid validation errors.
+    - **Error Handling:** Implement comprehensive error handling by checking response status codes and messages. Common error responses include:
+      - `400 Bad Request` – Validation errors or malformed requests.
+      - `401 Unauthorized` – Missing or invalid authentication tokens.
+      - `404 Not Found` – Invalid `policyId` or endpoint.
+    - **Security Best Practices:** 
+      - Use HTTPS in production to encrypt data in transit.
+      - Securely store and handle sensitive information, especially payment details.
+      - Implement authentication and authorization mechanisms to protect API endpoints.
+    - **Idempotency:** Be cautious with PATCH requests to prevent duplicate data submissions. Ensure that repeated requests do not adversely affect the policy registration process.
+    - **Rate Limiting:** Implement rate limiting to prevent abuse and ensure API availability.
+
+    ## Examples
+
+    ### Initiate Policy Registration
+
+    **Request:**
+    ```http
+    POST /policy/initiate
+    Content-Type: application/json
+
+    {
+      "name": "RODRIGO",
+      "firstSurname": "PEREZ",
+      "secondSurname": "LOPEZ",
+      "birthDate": "29/08/1988",
+      "phone1": "5555555555",
+      "email": "mcoria@segurosargos.com",
+      "occupationId": "1"
+    }
+    ```
+
+    **Response:**
+    ```http
+    HTTP/1.1 201 Created
+    Content-Type: application/json
+
+    {
+      "policyId": "abc123xyz"
+    }
+    ```
+
+    ## Support
+
+    If you encounter any issues or have questions regarding the API, please reach out to our support team:
+
+    - **Name:** Ukko
+    - **Email:** [support@ukko.mx](mailto:support@ukko.mx)
+    - **Website:** [https://ukko.mx](https://ukko.mx)
+
+    ## License
+
+    This API is licensed under the [MIT License](https://opensource.org/licenses/MIT).
+
+    ## Versioning
+
+    Current API version: `1.0.3`
+
+    ## Changelog
+
+    - **1.0.3:** Added new endpoints for policy processing and enhanced existing functionalities.
+    - **1.0.2:** Improved error handling and response messages.
+    - **1.0.1:** Initial release with core policy registration and retrieval features.
+
   contact:
     name: Ukko
     email: support@ukko.mx
@@ -436,6 +609,34 @@ paths:
         - Policy Retrieval
       x-stoplight:
         id: get-steps-1to5
+  /policy/{policyId}/process:
+    patch:
+      operationId: processPolicy
+      summary: Process Policy
+      description: Processes the policy and returns the policy folio upon success.
+      parameters:
+        - name: policyId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Unique identifier for the policy registration session.
+      responses:
+        '200':
+          description: Policy processed successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProcessPolicyResponse'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+      tags:
+        - Policy Registration
+
   /getOccupations:
     get:
       operationId: getOccupationsList
@@ -1511,3 +1712,11 @@ components:
           items:
             type: string
             example: Benito Juarez
+    ProcessPolicyResponse:
+      type: object
+      properties:
+        policyFolio:
+          type: integer
+          description: The folio number of the processed policy.
+      required:
+        - policyFolio
