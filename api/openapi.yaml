@@ -461,11 +461,23 @@ paths:
         - name: catalogType
           in: query
           description: >-
-            Name of the catalog, for example, PARTICIPATING_BANKS,
-            DANGEROUS_SPORTS, KINSHIP, COUNTRIES, BANNED_COUNTRIES, STATES.
+            Name of the catalog. Allowed values are:
+            - PARTICIPATING_BANKS
+            - DANGEROUS_SPORTS
+            - KINSHIP
+            - COUNTRIES
+            - BANNED_COUNTRIES
+            - STATES
           required: true
           schema:
             type: string
+            enum:
+              - PARTICIPATING_BANKS
+              - DANGEROUS_SPORTS
+              - KINSHIP
+              - COUNTRIES
+              - BANNED_COUNTRIES
+              - STATES
       responses:
         '200':
           description: Catalog retrieved successfully.
