@@ -128,27 +128,6 @@ info:
     - **Idempotency:** Be cautious with PATCH requests to prevent duplicate data submissions. Ensure that repeated requests do not adversely affect the policy registration process.
     - **Rate Limiting:** Implement rate limiting to prevent abuse and ensure API availability.
 
-    ## Examples
-
-    ### Initiate Policy Registration
-
-    **Request:**
-    ```http
-    POST /policy/initiate
-    Content-Type: application/json
-
-    ```
-
-    **Response:**
-    ```http
-    HTTP/1.1 201 Created
-    Content-Type: application/json
-
-    {
-      "policyId": "abc123xyz"
-    }
-    ```
-
     ## Support
 
     If you encounter any issues or have questions regarding the API, please reach out to our support team:
