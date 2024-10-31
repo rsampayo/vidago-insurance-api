@@ -2,10 +2,10 @@
 const express = require('express');
 const router = express.Router();
 
-// Import controller functions
+// Import the Plans controller function
 const { Plans } = require('../controllers/plansController');
 
 // Route: GET /api/v1/plans
-router.get('/plans', Plans);
+router.get('/', Plans);
 
 module.exports = router;
