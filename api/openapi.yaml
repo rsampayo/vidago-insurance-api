@@ -49,7 +49,7 @@ info:
     name: MIT
     url: 'https://opensource.org/licenses/MIT'
 servers:
-  - url: http://vidago.ramonsampayo.com
+  - url: https://vidago.ramonsampayo.com
     description: Production Server
 tags:
   - name: Catalogs
