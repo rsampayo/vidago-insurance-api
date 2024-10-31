@@ -3,23 +3,9 @@ const express = require('express');
 const router = express.Router();
 
 // Import controller functions
-const {
-  getOccupationsList,
-  getCatalogs,
-  getPlans,
-  getLocationByPostalCode,
-} = require('../controllers/catalogsController');
+const { catalogs } = require('../controllers/catalogController');
 
-// Route: GET /getOccupations
-router.get('/getOccupations', getOccupationsList);
-
-// Route: GET /getCatalogs
-router.get('/getCatalogs', getCatalogs);
-
-// Route: GET /getPlans
-router.get('/getPlans', getPlans);
-
-// Route: GET /postalCodes/{postalCode}
-router.get('/postalCodes/:postalCode', getLocationByPostalCode);
+// Route: GET /api/v1/catalogs?catalog_type=...
+router.get('/', catalogs);
 
 module.exports = router;

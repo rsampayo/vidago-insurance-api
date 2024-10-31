@@ -3,8 +3,8 @@ x-stoplight:
   id: 8zb7wj761t7xl
 info:
   title: Vidago Insurance Middleware API
-  version: 1.0.3
-  description: >
+  version: 1.2.7
+  description: |
     # Vidago Insurance Middleware API
 
     Welcome to the Vidago Insurance Middleware API documentation. This API serves as a bridge between your applications and Argos Insurance services, facilitating a seamless and secure multi-step policy registration process.
@@ -26,7 +26,7 @@ info:
 
     The API is accessible at the following base URL:
     ```
-    http://vidago.ramonsampayo.com
+    http://localhost:3000/
     ```
 
     ### Authentication
@@ -37,126 +37,17 @@ info:
 
     All request and response bodies use the `application/json` content type.
 
-    ## Endpoints
-
-    ### Policy Registration
-
-    - **Initiate Policy Registration**
-      - **Endpoint:** `POST /policy/initiate`
-      - **Description:** Starts a new policy registration session and returns a unique `policyId`.
-      - **Response:** 
-        - `201 Created` with `policyId` in the response body.
-
-    - **Submit Policy Steps**
-      - **Endpoints:** 
-        - `PATCH /policy/{policyId}/step/1`
-        - `PATCH /policy/{policyId}/step/2`
-        - `PATCH /policy/{policyId}/step/3`
-        - `PATCH /policy/{policyId}/step/4`
-        - `PATCH /policy/{policyId}/step/5`
-        - `PATCH /policy/{policyId}/step/6`
-        - `PATCH /policy/{policyId}/step/7`
-      - **Description:** Submit data for each respective step of the policy registration process.
-      - **Parameters:** 
-        - `policyId` (path parameter) – The unique identifier for the policy registration session.
-      - **Request Body:** JSON object containing the required fields for each step.
-      - **Response:** 
-        - `200 OK` with a success message or relevant data.
-
-    - **Process Policy**
-      - **Endpoint:** `PATCH /policy/{policyId}/process`
-      - **Description:** Finalizes the policy registration and returns the `policyFolio` number upon successful processing.
-      - **Parameters:** 
-        - `policyId` (path parameter) – The unique identifier for the policy registration session.
-      - **Response:** 
-        - `200 OK` with `policyFolio` in the response body.
-
-    ### Policy Retrieval
-
-    - **Get Policy Steps**
-      - **Endpoint:** `GET /policy/{policyId}/steps`
-      - **Description:** Retrieves the data submitted for Steps 1 to 5 of the policy registration process.
-      - **Parameters:** 
-        - `policyId` (path parameter) – The unique identifier for the policy registration session.
-      - **Response:** 
-        - `200 OK` with the aggregated data for steps 1 to 5.
-
-    ### Catalogs
-
-    - **Get Occupations List**
-      - **Endpoint:** `GET /getOccupations`
-      - **Description:** Retrieves a list of available occupations.
-      - **Response:** 
-        - `200 OK` with an array of occupations.
-
-    - **Get Catalogs**
-      - **Endpoint:** `GET /getCatalogs`
-      - **Description:** Returns a list of available catalogs based on the specified `catalogType`.
-      - **Parameters:** 
-        - `catalogType` (query parameter) – Type of catalog to retrieve (e.g., `PARTICIPATING_BANKS`, `COUNTRIES`).
-      - **Response:** 
-        - `200 OK` with the requested catalog data.
-
-    - **Get Plans**
-      - **Endpoint:** `GET /getPlans`
-      - **Description:** Retrieves a list of available insurance plans.
-      - **Response:** 
-        - `200 OK` with an array of insurance plans.
-
-    ### Payments
-
-    - **Submit Billing Information**
-      - **Endpoint:** `PATCH /policy/{policyId}/step/7`
-      - **Description:** Submits billing information for the policy registration process.
-      - **Parameters:** 
-        - `policyId` (path parameter) – The unique identifier for the policy registration session.
-      - **Request Body:** JSON object containing billing details.
-      - **Response:** 
-        - `200 OK` with billing operation details.
-
-    ## Usage Guidelines
-
-    - **Data Validation:** Ensure all required fields are provided and adhere to the specified formats and constraints to avoid validation errors.
-    - **Error Handling:** Implement comprehensive error handling by checking response status codes and messages. Common error responses include:
-      - `400 Bad Request` – Validation errors or malformed requests.
-      - `401 Unauthorized` – Missing or invalid authentication tokens.
-      - `404 Not Found` – Invalid `policyId` or endpoint.
-    - **Security Best Practices:** 
-      - Use HTTPS in production to encrypt data in transit.
-      - Securely store and handle sensitive information, especially payment details.
-      - Implement authentication and authorization mechanisms to protect API endpoints.
-    - **Idempotency:** Be cautious with PATCH requests to prevent duplicate data submissions. Ensure that repeated requests do not adversely affect the policy registration process.
-    - **Rate Limiting:** Implement rate limiting to prevent abuse and ensure API availability.
-
-    ## Support
-
-    If you encounter any issues or have questions regarding the API, please reach out to our support team:
-
-    - **Name:** Ukko
-    - **Email:** [support@ukko.mx](mailto:support@ukko.mx)
-    - **Website:** [https://ukko.mx](https://ukko.mx)
-
-    ## License
-
-    This API is licensed under the [MIT License](https://opensource.org/licenses/MIT).
-
-    ## Versioning
-
-    Current API version: `1.0.3`
-
-    ## Changelog
-
+    - **1.1.5:** Replaced `domicilio_igual` with `same_address_as_insured` and updated request structures for steps 4 and 5.
     - **1.0.3:** Added new endpoints for policy processing and enhanced existing functionalities.
     - **1.0.2:** Improved error handling and response messages.
     - **1.0.1:** Initial release with core policy registration and retrieval features.
-
   contact:
     name: Ukko
     email: support@ukko.mx
-    url: https://ukko.mx
+    url: 'https://ukko.mx'
   license:
     name: MIT
-    url: https://opensource.org/licenses/MIT
+    url: 'https://opensource.org/licenses/MIT'
 servers:
   - url: http://vidago.ramonsampayo.com
     description: Production Server
@@ -171,13 +62,11 @@ tags:
     description: Endpoints for retrieving policy registration data.
 security: []
 paths:
-  /policy/initiate:
+  /api/v1/policy/initiate:
     post:
       operationId: initiatePolicy
       summary: Initiate Policy Registration
-      description: >-
-        Initializes a new policy registration process and returns a unique
-        policy ID.
+      description: Initializes a new policy registration process and returns a unique policy ID.
       responses:
         '201':
           description: Policy registration initiated successfully.
@@ -186,26 +75,28 @@ paths:
               schema:
                 type: object
                 properties:
-                  policyId:
+                  policy_id:
                     type: string
                     description: Unique identifier for the policy registration session.
+                    pattern: '^[A-Za-z0-9\-]{1,36}$'
         '401':
           $ref: '#/components/responses/Error401'
       tags:
         - Policy Registration
       x-stoplight:
         id: gi75t8oe1zpj8
-  /policy/{policyId}/step/1:
+  '/api/v1/policy/{policy_id}/step/1':
     patch:
       operationId: submitPolicyStep1
       summary: Submit Policy Step 1
       description: Submits data for Step 1 of the policy registration process.
       parameters:
-        - name: policyId
+        - name: policy_id
           in: path
           required: true
           schema:
             type: string
+            pattern: '^[A-Za-z0-9\-]{1,36}$'
           description: Unique identifier for the policy registration session.
       requestBody:
         $ref: '#/components/requestBodies/SubmitPolicyStep1'
@@ -225,15 +116,14 @@ paths:
     get:
       operationId: getPolicyStep1
       summary: Get Policy Step 1
-      description: >-
-        Retrieves the data submitted for Step 1 of the policy registration
-        process.
+      description: Retrieves the data submitted for Step 1 of the policy registration process.
       parameters:
-        - name: policyId
+        - name: policy_id
           in: path
           required: true
           schema:
             type: string
+            pattern: '^[A-Za-z0-9\-]{1,36}$'
           description: Unique identifier for the policy registration session.
       responses:
         '200':
@@ -248,19 +138,20 @@ paths:
           $ref: '#/components/responses/Error404'
       tags:
         - Policy Retrieval
-  /policy/{policyId}/step/2:
+      x-stoplight:
+        id: m5l5twywoebat
+  '/api/v1/policy/{policy_id}/step/2':
     patch:
       operationId: submitPolicyStep2
       summary: Submit Policy Step 2
-      description: >-
-        Submits product and payment method information for Step 2 of the policy
-        registration process.
+      description: Submits product and payment method information for Step 2 of the policy registration process.
       parameters:
-        - name: policyId
+        - name: policy_id
           in: path
           required: true
           schema:
             type: string
+            pattern: '^[A-Za-z0-9\-]{1,36}$'
           description: Unique identifier for the policy registration session.
       requestBody:
         $ref: '#/components/requestBodies/SubmitPolicyStep2'
@@ -280,15 +171,14 @@ paths:
     get:
       operationId: getPolicyStep2
       summary: Get Policy Step 2
-      description: >-
-        Retrieves the product and payment method information submitted for Step
-        2 of the policy registration process.
+      description: Retrieves the product and payment method information submitted for Step 2 of the policy registration process.
       parameters:
-        - name: policyId
+        - name: policy_id
           in: path
           required: true
           schema:
             type: string
+            pattern: '^[A-Za-z0-9\-]{1,36}$'
           description: Unique identifier for the policy registration session.
       responses:
         '200':
@@ -303,19 +193,20 @@ paths:
           $ref: '#/components/responses/Error404'
       tags:
         - Policy Retrieval
-  /policy/{policyId}/step/3:
+      x-stoplight:
+        id: 78p956f1ayboe
+  '/api/v1/policy/{policy_id}/step/3':
     patch:
       operationId: submitPolicyStep3
       summary: Submit Policy Step 3
-      description: >-
-        Submits health and physical information for Step 3 of the policy
-        registration process.
+      description: Submits health and physical information for Step 3 of the policy registration process.
       parameters:
-        - name: policyId
+        - name: policy_id
           in: path
           required: true
           schema:
             type: string
+            pattern: '^[A-Za-z0-9\-]{1,36}$'
           description: Unique identifier for the policy registration session.
       requestBody:
         $ref: '#/components/requestBodies/SubmitPolicyStep3'
@@ -335,15 +226,14 @@ paths:
     get:
       operationId: getPolicyStep3
       summary: Get Policy Step 3
-      description: >-
-        Retrieves the health and physical information submitted for Step 3 of
-        the policy registration process.
+      description: Retrieves the health and physical information submitted for Step 3 of the policy registration process.
       parameters:
-        - name: policyId
+        - name: policy_id
           in: path
           required: true
           schema:
             type: string
+            pattern: '^[A-Za-z0-9\-]{1,36}$'
           description: Unique identifier for the policy registration session.
       responses:
         '200':
@@ -358,17 +248,20 @@ paths:
           $ref: '#/components/responses/Error404'
       tags:
         - Policy Retrieval
-  /policy/{policyId}/step/4:
+      x-stoplight:
+        id: 9ch6sj0vo4klp
+  '/api/v1/policy/{policy_id}/step/4':
     patch:
       operationId: submitPolicyStep4
       summary: Submit Policy Step 4
       description: Submits policy details for Step 4 of the policy registration process.
       parameters:
-        - name: policyId
+        - name: policy_id
           in: path
           required: true
           schema:
             type: string
+            pattern: '^[A-Za-z0-9\-]{1,36}$'
           description: Unique identifier for the policy registration session.
       requestBody:
         $ref: '#/components/requestBodies/SubmitPolicyStep4'
@@ -388,15 +281,14 @@ paths:
     get:
       operationId: getPolicyStep4
       summary: Get Policy Step 4
-      description: >-
-        Retrieves the policy details submitted for Step 4 of the policy
-        registration process.
+      description: Retrieves the policy details submitted for Step 4 of the policy registration process.
       parameters:
-        - name: policyId
+        - name: policy_id
           in: path
           required: true
           schema:
             type: string
+            pattern: '^[A-Za-z0-9\-]{1,36}$'
           description: Unique identifier for the policy registration session.
       responses:
         '200':
@@ -411,19 +303,20 @@ paths:
           $ref: '#/components/responses/Error404'
       tags:
         - Policy Retrieval
-  /policy/{policyId}/step/5:
+      x-stoplight:
+        id: gjx1tci99sv7s
+  '/api/v1/policy/{policy_id}/step/5':
     patch:
       operationId: submitPolicyStep5
       summary: Submit Policy Step 5
-      description: >-
-        Submits beneficiary information for Step 5 of the policy registration
-        process.
+      description: Submits beneficiary information for Step 5 of the policy registration process.
       parameters:
-        - name: policyId
+        - name: policy_id
           in: path
           required: true
           schema:
             type: string
+            pattern: '^[A-Za-z0-9\-]{1,36}$'
           description: Unique identifier for the policy registration session.
       requestBody:
         $ref: '#/components/requestBodies/SubmitPolicyStep5'
@@ -443,15 +336,14 @@ paths:
     get:
       operationId: getPolicyStep5
       summary: Get Policy Step 5
-      description: >-
-        Retrieves the beneficiary information submitted for Step 5 of the policy
-        registration process.
+      description: Retrieves the beneficiary information submitted for Step 5 of the policy registration process.
       parameters:
-        - name: policyId
+        - name: policy_id
           in: path
           required: true
           schema:
             type: string
+            pattern: '^[A-Za-z0-9\-]{1,36}$'
           description: Unique identifier for the policy registration session.
       responses:
         '200':
@@ -466,17 +358,20 @@ paths:
           $ref: '#/components/responses/Error404'
       tags:
         - Policy Retrieval
-  /policy/{policyId}/step/6:
+      x-stoplight:
+        id: 4edac2hxiol6l
+  '/api/v1/policy/{policy_id}/step/6':
     patch:
       operationId: submitPolicyStep6
       summary: Submit Policy Step 6
       description: Submits data for Step 6 of the policy registration process.
       parameters:
-        - name: policyId
+        - name: policy_id
           in: path
           required: true
           schema:
             type: string
+            pattern: '^[A-Za-z0-9\-]{1,36}$'
           description: Unique identifier for the policy registration session.
       requestBody:
         $ref: '#/components/requestBodies/SubmitPolicyStep6'
@@ -491,20 +386,17 @@ paths:
           $ref: '#/components/responses/Error404'
       tags:
         - Policy Registration
-      x-stoplight:
-        id: my5d4sq392abg
     get:
       operationId: getPolicyStep6
       summary: Get Policy Step 6
-      description: >-
-        Retrieves the data submitted for Step 6 of the policy registration
-        process.
+      description: Retrieves the data submitted for Step 6 of the policy registration process.
       parameters:
-        - name: policyId
+        - name: policy_id
           in: path
           required: true
           schema:
             type: string
+            pattern: '^[A-Za-z0-9\-]{1,36}$'
           description: Unique identifier for the policy registration session.
       responses:
         '200':
@@ -519,19 +411,18 @@ paths:
           $ref: '#/components/responses/Error404'
       tags:
         - Policy Retrieval
-  /policy/{policyId}/step/7:
+  '/api/v1/policy/{policy_id}/step/7':
     patch:
       operationId: submitPolicyStep7
       summary: Submit Policy Step 7
-      description: >-
-        Submits billing information for Step 7 of the policy registration
-        process.
+      description: Submits billing information for Step 7 of the policy registration process.
       parameters:
-        - name: policyId
+        - name: policy_id
           in: path
           required: true
           schema:
             type: string
+            pattern: '^[A-Za-z0-9\-]{1,36}$'
           description: Unique identifier for the policy registration session.
       requestBody:
         $ref: '#/components/requestBodies/SubmitPolicyStep7'
@@ -550,19 +441,18 @@ paths:
         - Payments
       x-stoplight:
         id: eftmsf4k7qjfp
-  /policy/{policyId}/steps:
+  '/api/v1/policy/{policy_id}/steps':
     get:
       operationId: getPolicySteps1to5
       summary: Get Policy Steps 1 to 5
-      description: >-
-        Retrieves the data submitted for Steps 1 to 5 of the policy registration
-        process.
+      description: Retrieves the data submitted for Steps 1 to 5 of the policy registration process.
       parameters:
-        - name: policyId
+        - name: policy_id
           in: path
           required: true
           schema:
             type: string
+            pattern: '^[A-Za-z0-9\-]{1,36}$'
           description: Unique identifier for the policy registration session.
       responses:
         '200':
@@ -579,17 +469,18 @@ paths:
         - Policy Retrieval
       x-stoplight:
         id: get-steps-1to5
-  /policy/{policyId}/process:
+  '/api/v1/policy/{policy_id}/process':
     patch:
       operationId: processPolicy
       summary: Process Policy
       description: Processes the policy and returns the policy folio upon success.
       parameters:
-        - name: policyId
+        - name: policy_id
           in: path
           required: true
           schema:
             type: string
+            pattern: '^[A-Za-z0-9\-]{1,36}$'
           description: Unique identifier for the policy registration session.
       responses:
         '200':
@@ -606,10 +497,11 @@ paths:
           $ref: '#/components/responses/Error404'
       tags:
         - Policy Registration
-
-  /getOccupations:
+      x-stoplight:
+        id: uhnyln96g4xb0
+  /api/v1/occupations:
     get:
-      operationId: getOccupationsList
+      operationId: occupationsList
       summary: Get Occupations List
       description: Retrieves a list of available occupations.
       responses:
@@ -623,28 +515,23 @@ paths:
                   $ref: '#/components/schemas/OccupationJSON'
       tags:
         - Catalogs
-  /getCatalogs:
+      x-stoplight:
+        id: lt6cwzh9x7dwj
+  /api/v1/catalogs:
     get:
-      operationId: getCatalogs
+      operationId: catalogs
       summary: Get Catalogs
       description: Returns a list of available catalogs.
       parameters:
-        - name: catalogType
+        - name: catalog_type
           in: query
-          description: >-
-            Name of the catalog. Allowed values are:
-            - PARTICIPATING_BANKS
-            - DANGEROUS_SPORTS
-            - KINSHIP
-            - COUNTRIES
-            - BANNED_COUNTRIES
-            - STATES
+          description: 'Name of the catalog. Allowed values are: - BANCOS_PARTICIPANTES - DEPORTES_PELIGROSOS - KINSHIP - COUNTRIES - BANNED_COUNTRIES - STATES'
           required: true
           schema:
             type: string
             enum:
-              - PARTICIPATING_BANKS
-              - DANGEROUS_SPORTS
+              - BANCOS_PARTICIPANTES
+              - DEPORTES_PELIGROSOS
               - KINSHIP
               - COUNTRIES
               - BANNED_COUNTRIES
@@ -658,14 +545,74 @@ paths:
                 $ref: '#/components/schemas/OptionJSON'
       tags:
         - Catalogs
-  /getPlans:
+      x-stoplight:
+        id: wfblpm5jvci6h
+  /api/v1/plans:
     get:
       security: []
-      operationId: getPlans
+      operationId: Plans
       summary: Retrieve a list of insurance plans
-      description: Returns a list of available plans.
+      description: |
+        Retrieves a list of available insurance plans based on the provided filters. 
+        You can filter the plans using either `policy_id` **or** other filtering parameters (`age`, `birth_date`, `risk`, `payment_method`).
+
+        **Note:** `policy_id` cannot be combined with other filtering parameters.
       tags:
         - Catalogs
+      parameters:
+        - name: policy_id
+          in: query
+          description: |
+            The unique identifier for an existing insurance policy. 
+            Cannot be combined with other filters (`age`, `birth_date`, `risk`, `payment_method`).
+          required: false
+          schema:
+            type: string
+            example: '12345'
+            pattern: '^[A-Za-z0-9\-]{1,36}$'
+        - name: age
+          in: query
+          description: |
+            The age of the insured. 
+            Required if `policy_id` is not provided.
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            example: 30
+        - name: birth_date
+          in: query
+          description: |
+            The birth date of the insured in `YYYY-MM-DD` format. 
+            Used to calculate age if `age` is not provided.
+          required: false
+          schema:
+            type: string
+            format: date
+            example: '1988-08-29'
+            pattern: '^\d{4}-\d{2}-\d{2}$'
+        - name: risk
+          in: query
+          description: The risk level associated with the insured.
+          required: false
+          schema:
+            type: string
+            enum:
+              - NORMAL
+              - SUBNORMAL
+            pattern: '^(NORMAL|SUBNORMAL)$'
+            example: 'NORMAL'
+        - name: payment_method
+          in: query
+          description: The preferred payment method.
+          required: false
+          schema:
+            type: string
+            enum:
+              - MENSUAL
+              - ANUAL
+            pattern: '^(MENSUAL|ANUAL)$'
+            example: 'MENSUAL'
       responses:
         '200':
           description: A list of available insurance plans
@@ -678,47 +625,87 @@ paths:
                   value:
                     plans:
                       - id: '001'
-                        productName: BASIC_001
-                        fullName: Basico
-                        paymentMethods:
-                          - paymentMethod: Monthly
+                        product_name: BASIC001
+                        full_name: Basico
+                        payment_methods:
+                          - payment_method: MENSUAL
                             premium: 250
-                          - paymentMethod: Yearly
+                          - payment_method: ANUAL
                             premium: 2800
                         coverages:
                           - name: Health
-                            insuredAmount: 50000
+                            insured_amount: 50000
                           - name: Accident
-                            insuredAmount: 100000
+                            insured_amount: 100000
                       - id: '002'
-                        productName: PREM_002
-                        fullName: Premium
-                        paymentMethods:
-                          - paymentMethod: Monthly
+                        product_name: PREM002
+                        full_name: Premium
+                        payment_methods:
+                          - payment_method: MENSUAL
                             premium: 350
-                          - paymentMethod: Yearly
+                          - payment_method: ANUAL
                             premium: 4000
                         coverages:
                           - name: Health
-                            insuredAmount: 100000
+                            insured_amount: 100000
                           - name: Accident
-                            insuredAmount: 200000
-  /postalCodes/{postalCode}:
+                            insured_amount: 200000
+        '400':
+          description: Bad Request - Validation errors.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorJSON'
+              examples:
+                example-1:
+                  value:
+                    status: false
+                    message: "Cannot provide policy_id with other filtering parameters."
+                example-2:
+                  value:
+                    status: false
+                    message: "Invalid birth_date format. Expected YYYY-MM-DD."
+        '404':
+          description: Not Found - Insurance policy not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorJSON'
+              examples:
+                example-1:
+                  value:
+                    status: false
+                    message: "Insurance policy not found."
+        '422':
+          description: Unprocessable Entity - Missing or invalid data.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorJSON'
+              examples:
+                example-1:
+                  value:
+                    status: false
+                    message: "Age not set for the insurance policy."
+                example-2:
+                  value:
+                    status: false
+                    message: "Risk information is missing for the insurance policy."
+      x-stoplight:
+        id: updated-get-plans
+  '/api/v1/postalCodes/{postal_code}':
     get:
       operationId: getLocationByPostalCode
       summary: Retrieve Location Details by Postal Code
-      description: >-
-        Retrieves the municipality, city, state, country, and an array of
-        neighborhoods associated with the provided postal code.
+      description: 'Retrieves the municipality, city, state, country, and an array of neighborhoods associated with the provided postal code.'
       parameters:
-        - name: postalCode
+        - name: postal_code
           in: path
           required: true
           schema:
             type: string
-            pattern: ^\d{5}$
-            description: The 5-digit postal code.
-          description: The postal code for which to retrieve location details.
+            pattern: '^\d{5}$'
+          description: The 5-digit postal code.
       responses:
         '200':
           description: Location details retrieved successfully.
@@ -731,7 +718,7 @@ paths:
                   value:
                     municipality: Nezahualcoyotl
                     city: Nezahualcoyotl
-                    state: Mexico
+                    state_address: Mexico
                     country: Mexico
                     neighborhoods:
                       - Benito Juarez
@@ -760,36 +747,34 @@ components:
             $ref: '#/components/schemas/PolicyStep1JSON'
           example:
             name: RODRIGO
-            firstSurname: PEREZ
-            secondSurname: LOPEZ
-            birthDate: 29/08/1988
-            phone1: '5555555555'
+            first_surname: PEREZ
+            second_surname: LOPEZ
+            birth_date: '1990-12-30'
+            phone_1: '5555555555'
             email: mcoria@segurosargos.com
-            occupationId: '1'
+            argos_occupation_id: '1'
     SubmitPolicyStep2:
-      description: >-
-        Submits product and payment method information for Step 2 of the policy
-        registration process.
+      description: Submits product and payment method information for Step 2 of the policy registration process.
       required: true
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/PolicyStep2JSON'
           example:
-            productName: PLAN500
-            paymentMethod: MENSUAL
+            product_name: PLAN500
+            payment_method: MENSUAL
+            insured_amount: 500000
+            premium: 250
     SubmitPolicyStep3:
-      description: >-
-        Submits health and physical information for Step 3 of the policy
-        registration process.
+      description: Submits health and physical information for Step 3 of the policy registration process.
       required: true
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/PolicyStep3JSON'
           example:
-            question1: false
-            question2: false
+            question_1: false
+            question_2: false
             height: 1.7
             weight: 70
     SubmitPolicyStep4:
@@ -798,95 +783,117 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/PolicyStep4JSON'
+            type: object
+            properties:
+              insurance_policy:
+                $ref: '#/components/schemas/PolicyStep4JSON'
           example:
-            countryOfBirth: Mexico
+            country_of_birth: Mexico
             rfc: LOPR880829KB5
             gender: '1'
-            maritalStatus: '2'
-            street: FAISANES
-            exteriorNumber: '105'
-            postalCode: '57000'
-            neighborhood: Benito Juarez
-            municipality: Nezahualcoyotl
-            city: Nezahualcoyotl
-            state: Mexico
-            country: Mexico
+            marital_status: '2'
+            location_address_attributes:
+              street: GLADIOLAS
+              exterior_number: '99'
+              interior_number: ''
+              neighborhood: JARDIN
+              delegation: ''
+              municipality: MATAMOROS
+              city: Nezahualcoyotl
+              federal_entity: ''
+              state: Tamaulipas
+              province: ''
+              department: ''
+              postal_code: '57000'
+              country: Mexico
     SubmitPolicyStep5:
-      description: >-
-        Submits beneficiary information for Step 5 of the policy registration
-        process.
+      description: Submits beneficiary information for Step 5 of the policy registration process.
       required: true
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/PolicyStep5JSON'
+            type: object
+            properties:
+              beneficiary:
+                $ref: '#/components/schemas/PolicyStep5JSON'
           example:
-            domicilioIgual: false
-            name: IVONNE
-            firstSurname: SOTO
-            secondSurname: VEGA
-            relationship: Cónyuge
-            birthDate: 15/05/1990
-            street: AVENIDA CENTRAL
-            exteriorNumber: '200'
-            postalCode: '57000'
-            neighborhood: Benito Juarez
-            municipality: Nezahualcoyotl
-            city: Nezahualcoyotl
-            state: Mexico
-            country: Mexico
+            beneficiary:
+              same_address_as_insured: false
+              name: IVONNE
+              first_surname: SOTO
+              second_surname: VEGA
+              relationship: Cónyuge
+              birth_date: '1990-12-30'
+              percentage: 100
+              location_address_attributes:
+                street: AVENIDA CENTRAL
+                exterior_number: '200'
+                interior_number: ''
+                neighborhood: Benito Juarez
+                delegation: ''
+                municipality: Nezahualcoyotl
+                city: Nezahualcoyotl
+                federal_entity: ''
+                state: Puebla
+                province: ''
+                department: ''
+                postal_code: '57000'
+                country: Mexico
     SubmitPolicyStep6:
       description: Submits data for Step 6 of the policy registration process.
       required: true
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/PolicyStep6JSON'
+            type: object
+            properties:
+              insurance_policies_step6:
+                $ref: '#/components/schemas/PolicyStep6JSON'
           example:
-            insuredPays: false
-            declarationRelationship: Padre/Madre
-            otherNationalityResidence: false
-            otherNationalityResidenceDetails: Canadá
-            paysTaxesInOtherCountry: false
-            paysTaxesInOtherCountryDetails: Estados Unidos
-            insuredGovernmentPosition: false
-            governmentPositionDetails:
-              - position: Diputado Federal
-                department: Cámara de Diputados
-            relativesGovernmentPosition: false
-            relativesGovernmentPositionDetails:
-              - name: María López
-                relationship: Hermano/Hermana
-                position: Secretario de Salud
-                department: Secretaría de Salud
-            insuredNaturalPerson: false
-            insuredCommercialTies: false
-            insuredCommercialTiesCountry: Brasil, Argentina
-            otherNationalityResidenceContractor: false
-            otherNationalityResidenceContractorDetails: Francia
-            paysTaxesInOtherCountryContractor: false
-            paysTaxesInOtherCountryContractorDetails: Alemania
-            contractorGovernmentPosition: false
-            governmentPositionDetailsContractor:
-              - position: Embajador
-                department: Secretaría de Relaciones Exteriores
-            contractorRelativesGovernmentPosition: false
-            relativesGovernmentPositionDetailsContractor:
-              - name: Carlos Gómez
-                relationship: Cónyuge
-                position: Ministro de Economía
-                department: Secretaría de Economía
-            contractorNaturalPerson: false
-            contractorCommercialTies: false
-            contractorCommercialTiesCountry: Chile, Perú
-            signedDeclaration: true
-            acceptedPrivacyNotice: true
-            acceptedTermsConditions: true
+            insurance_policies_step6:
+              pld_attributes:
+                declaration_relationship: "Padre/Madre"
+                insured_pays: false
+                other_nationality_residence: false
+                other_nationality_residence_details: "Canadá"
+                pays_taxes_in_other_country: false
+                pays_taxes_in_other_country_details: "Estados Unidos"
+                insured_government_position: true
+                relatives_government_position: true
+                insured_natural_person: false
+                insured_commercial_ties: false
+                insured_commercial_ties_country: "Brasil, Argentina"
+                other_nationality_residence_contractor: false
+                other_nationality_residence_contractor_details: "Francia"
+                pays_taxes_in_other_country_contractor: false
+                pays_taxes_in_other_country_contractor_details: "Alemania"
+                contractor_government_position: true
+                contractor_relatives_government_position: true
+                contractor_natural_person: false
+                contractor_commercial_ties: false
+                contractor_commercial_ties_country: "Chile, Perú"
+                signed_declaration: true
+                accepted_privacy_notice: true
+                accepted_terms_conditions: true
+                relatives_government_positions_attributes:
+                  - position: "Diputado Federal"
+                    department: "Cámara de Diputados"
+                    role: "insured"
+                  - name: "María López"
+                    relationship: "Hermano/Hermana"
+                    position: "Secretario de Salud"
+                    department: "Secretaría de Salud"
+                    role: "relative"
+                  - position: "Embajador"
+                    department: "Secretaría de Relaciones Exteriores"
+                    role: "contractor"
+                  - name: "Carlos Gómez"
+                    relationship: "Cónyuge"
+                    position: "Ministro de Economía"
+                    department: "Secretaría de Economía"
+                    role: "contractor_relative"
     SubmitPolicyStep7:
-      description: >-
-        Submits billing information for Step 7 of the policy registration
-        process.
+      description: Submits billing information for Step 7 of the policy registration process.
       required: true
       content:
         application/json:
@@ -894,16 +901,14 @@ components:
             $ref: '#/components/schemas/BillingDataJSON'
           example:
             amount: 1200
-            policyFolio: 1234
+            policy_folio: 1001443313
             cardholder: RODRIGO PEREZ
-            cardNumber: '4111111111111111'
-            expirationMonth: '08'
-            expirationYear: '25'
+            card_number: '545631906543654'
+            expiration_month: '08'
+            expiration_year: '25'
             cvv: '123'
-            billingDay1: '01'
-            billingDay2: '15'
-            pagarSinIntereses: true
-            bancoEmisor: BANCOMER
+            pay_without_interest: true
+            issuing_bank: BANCOMER
   responses:
     SuccessMessage200:
       description: Step submitted successfully.
@@ -924,7 +929,7 @@ components:
           schema:
             $ref: '#/components/schemas/ErrorJSON'
     Error404:
-      description: Not Found - Invalid policyId.
+      description: Not Found - Invalid policy_id.
       content:
         application/json:
           schema:
@@ -936,6 +941,7 @@ components:
         message:
           type: string
           description: Success message.
+          pattern: '^.{1,255}$'
       required:
         - message
     PolicySteps1to5JSON:
@@ -955,106 +961,115 @@ components:
       type: object
       required:
         - name
-        - firstSurname
-        - secondSurname
-        - birthDate
-        - phone1
+        - first_surname
+        - second_surname
+        - birth_date
+        - phone_1
         - email
-        - occupationId
+        - argos_occupation_id
       properties:
         name:
           type: string
           maxLength: 50
           description: The insured's first name. **Required.**
-          pattern: ^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{1,50}$
+          pattern: '^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{1,50}$'
           example: JUAN
-        firstSurname:
+        first_surname:
           type: string
           maxLength: 50
           description: The insured's first surname. **Required.**
-          pattern: ^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{1,50}$
+          pattern: '^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{1,50}$'
           example: RAMIREZ
-        secondSurname:
+        second_surname:
           type: string
           maxLength: 50
           description: The insured's second surname. **Required.**
-          pattern: ^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{1,50}$
+          pattern: '^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{1,50}$'
           example: GARCIA
-        birthDate:
+        birth_date:
           type: string
-          description: The insured's date of birth in dd/mm/yyyy format. **Required.**
-          example: 29/08/1988
-        phone1:
+          format: date
+          description: The insured's date of birth in YYYY-MM-DD format. **Required.**
+          example: '1983-12-01'
+        phone_1:
           type: string
           description: The insured's primary contact phone number. **Required.**
-          pattern: ^\d{10}$
+          pattern: '^\d{10}$'
           example: '5555555555'
         email:
           type: string
           maxLength: 100
           description: The insured's email address. **Required.**
           format: email
-          pattern: ^[^\s@]+@[^\s@]+\.[^\s@]+$
+          pattern: '^[^\s@]+@[^\s@]+\.[^\s@]+$'
           example: mcoria@segurosargos.com
-        occupationId:
+        argos_occupation_id:
           type: string
           description: Insured's occupation ID. **Required.**
+          pattern: '^\d+$'
           example: '1'
       x-stoplight:
         id: j9hiz99h7xkzl
     PolicyStep2JSON:
       type: object
       required:
-        - productName
-        - paymentMethod
+        - product_name
+        - payment_method
+        - insured_amount
+        - premium
       properties:
-        productName:
+        product_name:
           type: string
           description: Seleccionar entre "PLAN100" (Básico) y "PLAN500" (Premium).
           enum:
             - PLAN100
             - PLAN500
           example: PLAN100
-        paymentMethod:
+        payment_method:
           type: string
           description: Seleccionar entre "MENSUAL" o "ANUAL".
           enum:
             - MENSUAL
             - ANUAL
+          pattern: '^(MENSUAL|ANUAL)$'
           example: MENSUAL
+        insured_amount:
+          type: integer
+          description: Monto de suma asegurada.
+          minimum: 1
+          maximum: 10000000
+          example: 500000
+        premium:
+          type: integer
+          description: Monto de prima a pagar.
+          minimum: 1
+          maximum: 100000
+          example: 250
       x-stoplight:
         id: 0px9yjmz0itsk
     PolicyStep3JSON:
       type: object
       required:
-        - question1
-        - question2
+        - question_1
+        - question_2
         - height
         - weight
       properties:
-        question1:
+        question_1:
           type: boolean
-          description: >-
-            Indicate `true` if the insured has suffered certain diseases,
-            otherwise `false`.
-        question2:
+          description: 'Indicate `true` if the insured has suffered certain diseases, otherwise `false`.'
+        question_2:
           type: boolean
-          description: >-
-            Appears only if `question1` is `false`. Indicate `true` if the
-            insured practices dangerous sports, otherwise `false`.
+          description: 'Appears only if `question_1` is `false`. Indicate `true` if the insured practices dangerous sports, otherwise `false`.'
         height:
           type: number
-          description: >-
-            Appears if `question1` is `false`. Height in meters (e.g., 1.70).
-            Values between 1.00 and 2.50 meters.
+          description: 'Appears if `question_1` is `false`. Height in meters (e.g., 1.70). Values between 1.00 and 2.50 meters.'
           minimum: 1
           maximum: 2.5
           example: 1.7
         weight:
           type: number
-          description: >-
-            Appears if `question1` is `false`. Weight in kilograms. Values
-            between 18 and 200 kg.
+          description: 'Appears if `question_1` is `false`. Weight in kilograms. Values between 18 and 200 kg.'
           minimum: 18
           maximum: 200
           example: 70
@@ -1063,26 +1078,24 @@ components:
     PolicyStep4JSON:
       type: object
       required:
-        - countryOfBirth
+        - country_of_birth
         - rfc
         - gender
-        - maritalStatus
-        - street
-        - exteriorNumber
-        - postalCode
-        - neighborhood
+        - marital_status
+        - location_address_attributes
       properties:
-        countryOfBirth:
+        country_of_birth:
           type: string
           description: Seleccionar el país de nacimiento. Por defecto "Mexico".
           enum:
             - Mexico
             - Otro país
+          pattern: '^(Mexico|Otro país)$'
           example: Mexico
         rfc:
           type: string
-          description: Formato válido de RFC mexicano, 13 caracteres alfanuméricos.
-          pattern: ^[A-ZÑ&]{4}\d{6}[A-Z0-9]{3}$
+          description: 'Formato válido de RFC mexicano, 13 caracteres alfanuméricos.'
+          pattern: '^[A-ZÑ&]{4}\d{6}[A-Z0-9]{3}$'
           example: LOPR880829KB5
         gender:
           type: string
@@ -1090,8 +1103,9 @@ components:
           enum:
             - '1'
             - '2'
+          pattern: '^(1|2)$'
           example: '1'
-        maritalStatus:
+        marital_status:
           type: string
           description: 'Opciones: 1-Soltero, 2-Casado, 3-Unión Libre, 4-Divorciado, 5-Viudo.'
           enum:
@@ -1100,429 +1114,348 @@ components:
             - '3'
             - '4'
             - '5'
+          pattern: '^[1-5]$'
           example: '2'
+        location_address_attributes:
+          $ref: '#/components/schemas/LocationAddressAttributes'
+      x-stoplight:
+        id: 14cyuo6cm8au0
+    PolicyStep5JSON:
+      type: object
+      required:
+        - same_address_as_insured
+        - name
+        - first_surname
+        - second_surname
+        - relationship
+        - birth_date
+        - percentage
+      properties:
+        same_address_as_insured:
+          type: boolean
+          description: 'Indicate `true` if the beneficiary''s address is the same as the insured, otherwise `false`.'
+        name:
+          type: string
+          description: Nombre del beneficiario.
+          pattern: '^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{1,50}$'
+          maxLength: 50
+          example: IVONNE
+        first_surname:
+          type: string
+          description: Primer apellido del beneficiario.
+          pattern: '^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{1,50}$'
+          maxLength: 50
+          example: SOTO
+        second_surname:
+          type: string
+          description: Segundo apellido del beneficiario.
+          pattern: '^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{1,50}$'
+          maxLength: 50
+          example: VEGA
+        relationship:
+          type: string
+          description: 'Parentesco con el asegurado. Opciones: "Cónyuge", "Hijo/Hija", "Padre/Madre", "Hermano/Hermana".'
+          example: Cónyuge
+        birth_date:
+          type: string
+          format: date
+          description: The insured's date of birth in YYYY-MM-DD format. **Required.**
+          example: '1986-12-01'
+        percentage:
+          type: integer
+          description: Porcentaje asignado al beneficiario.
+          minimum: 1
+          maximum: 100
+          example: 100
+        location_address_attributes:
+          $ref: '#/components/schemas/LocationAddressAttributes'
+      x-stoplight:
+        id: 6k4rqbnw9g8fn
+    LocationAddressAttributes:
+      type: object
+      required:
+        - street
+        - exterior_number
+        - postal_code
+        - state
+        - neighborhood
+      properties:
         street:
           type: string
           description: Dirección de la calle. Máximo 100 caracteres.
-          pattern: ^.{1,100}$
+          pattern: '^[A-Za-zÁÉÍÓÚáéíóúÑñ0-9\s\.,\-]{1,100}$'
           maxLength: 100
           example: FAISANES
-        exteriorNumber:
+        exterior_number:
           type: string
           description: Número exterior. Máximo 10 caracteres.
-          pattern: ^[A-Za-z0-9]{1,10}$
+          pattern: '^[A-Za-z0-9]{1,10}$'
           maxLength: 10
           example: '105'
-        postalCode:
+        interior_number:
           type: string
-          description: Código postal de 5 dígitos.
-          pattern: ^\d{5}$
-          maxLength: 5
-          example: '57000'
+          description: Número interior. Máximo 10 caracteres.
+          pattern: '^[A-Za-z0-9]{0,10}$'
+          maxLength: 10
+          example: '2B'
         neighborhood:
           type: string
           description: Colonias correspondientes al código postal ingresado.
           enum:
             - Benito Juarez
             - Otra Colonia
+          pattern: '^(Benito Juarez|Otra Colonia)$'
           example: Benito Juarez
+        delegation:
+          type: string
+          description: Delegación o alcaldía.
+          pattern: '^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{0,100}$'
+          example: None
         municipality:
           type: string
           description: Se completa automáticamente según el código postal.
+          pattern: '^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{1,100}$'
           example: Nezahualcoyotl
         city:
           type: string
           description: Se completa automáticamente según el código postal.
+          pattern: '^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{1,100}$'
           example: Nezahualcoyotl
+        federal_entity:
+          type: string
+          description: Entidad federativa.
+          pattern: '^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{0,100}$'
+          example: None
         state:
           type: string
           description: Se completa automáticamente según el código postal.
+          pattern: '^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{1,100}$'
           example: Mexico
-        country:
+        state_code:
           type: string
-          description: Se completa automáticamente, por defecto "Mexico".
-          example: Mexico
-      x-stoplight:
-        id: 14cyuo6cm8au0
-    PolicyStep5JSON:
-      type: object
-      required:
-        - domicilioIgual
-        - name
-        - firstSurname
-        - secondSurname
-        - relationship
-        - birthDate
-      properties:
-        domicilioIgual:
-          type: boolean
-          description: >-
-            Indicate `true` if the address is the same as the insured, otherwise
-            `false`.
-        name:
+          description: Se completa automáticamente según el código postal.
+          pattern: '^\d{2}$'
+          example: "12"
+        province:
           type: string
-          description: Nombre del beneficiario.
-          pattern: ^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{1,50}$
-          maxLength: 50
-          example: IVONNE
-        firstSurname:
+          description: Provincia.
+          pattern: '^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{0,100}$'
+          example: None
+        department:
           type: string
-          description: Primer apellido del beneficiario.
-          pattern: ^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{1,50}$
-          maxLength: 50
-          example: SOTO
-        secondSurname:
+          description: Departamento.
+          pattern: '^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{0,100}$'
+          example: None
+        postal_code:
           type: string
-          description: Segundo apellido del beneficiario.
-          pattern: ^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{1,50}$
-          maxLength: 50
-          example: VEGA
-        relationship:
-          type: string
-          description: >-
-            Parentesco con el asegurado. Opciones: "Cónyuge", "Hijo/Hija",
-            "Padre/Madre", "Hermano/Hermana".
-          example: Cónyuge
-        birthDate:
-          type: string
-          description: Fecha de nacimiento del beneficiario en formato dd/mm/aaaa.
-          pattern: ^(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[012])/([0-9]{4})$
-          example: 15/05/1990
-        street:
-          type: string
-          description: Calle del domicilio del beneficiario.
-          pattern: ^.{1,100}$
-          maxLength: 100
-          example: AVENIDA CENTRAL
-        exteriorNumber:
-          type: string
-          description: Número exterior del domicilio del beneficiario.
-          pattern: ^[A-Za-z0-9]{1,10}$
-          maxLength: 10
-          example: '200'
-        postalCode:
-          type: string
-          description: Código postal del domicilio del beneficiario.
-          pattern: ^\d{5}$
+          description: Código postal de 5 dígitos.
+          pattern: '^\d{5}$'
           maxLength: 5
           example: '57000'
-        neighborhood:
-          type: string
-          description: Colonia del domicilio del beneficiario.
-          enum:
-            - Benito Juarez
-          example: Benito Juarez
-        municipality:
-          type: string
-          description: Municipio del domicilio del beneficiario. No editable.
-          example: Nezahualcoyotl
-        city:
-          type: string
-          description: Ciudad del domicilio del beneficiario. No editable.
-          example: Nezahualcoyotl
-        state:
-          type: string
-          description: Estado del domicilio del beneficiario. No editable.
-          example: Mexico
         country:
           type: string
-          description: País del domicilio del beneficiario. No editable.
+          description: 'Se completa automáticamente, por defecto "Mexico".'
+          pattern: '^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{1,100}$'
           example: Mexico
-      x-stoplight:
-        id: 6k4rqbnw9g8fn
     PolicyStep6JSON:
       type: object
       required:
-        - insuredPays
-        - otherNationalityResidence
-        - paysTaxesInOtherCountry
-        - insuredGovernmentPosition
-        - insuredNaturalPerson
-        - signedDeclaration
-        - acceptedPrivacyNotice
-        - acceptedTermsConditions
+        - pld_attributes
       properties:
-        insuredPays:
-          type: boolean
-          description: Indicate `true` if the insured pays the premiums, otherwise `false`.
-        declarationRelationship:
-          type: string
-          description: >-
-            Applies if `insuredPays` is `false`. Select the relationship with
-            the contractor. Options: Cónyuge, Hijo/Hija, Padre/Madre,
-            Hermano/Hermana, Otro.
-          example: Padre/Madre
-        otherNationalityResidence:
-          type: boolean
-          description: >-
-            Indicate `true` if the insured has another nationality or residence,
-            otherwise `false`.
-        otherNationalityResidenceDetails:
-          type: string
-          description: >-
-            Specify the country if `otherNationalityResidence` is `true`. List
-            of countries.
-          maxLength: 50
-          pattern: ^.{1,50}$
-          example: Canadá
-        paysTaxesInOtherCountry:
-          type: boolean
-          description: >-
-            Indicate `true` if the insured pays taxes in another country,
-            otherwise `false`.
-        paysTaxesInOtherCountryDetails:
-          type: string
-          description: >-
-            Specify the country if `paysTaxesInOtherCountry` is `true`. List of
-            countries.
-          maxLength: 50
-          pattern: ^.{1,50}$
-          example: Estados Unidos
-        insuredGovernmentPosition:
-          type: boolean
-          description: >-
-            Indicate `true` if the insured holds or has held a government
-            position, otherwise `false`.
-        governmentPositionDetails:
-          type: array
-          items:
-            type: object
-            properties:
-              position:
-                type: string
-                description: Specify the position held. Maximum 100 characters.
-                maxLength: 100
-                pattern: ^.{1,100}$
-                example: Diputado Federal
-              department:
-                type: string
-                description: Specify the government department. Maximum 100 characters.
-                maxLength: 100
-                pattern: ^.{1,100}$
-                example: Cámara de Diputados
-        relativesGovernmentPosition:
-          type: boolean
-          description: >-
-            Indicate `true` if the insured has close relatives with government
-            positions, otherwise `false`.
-        relativesGovernmentPositionDetails:
-          type: array
-          items:
-            type: object
-            properties:
-              name:
-                type: string
-                description: Specify the relative's name. Maximum 50 characters.
-                maxLength: 50
-                pattern: ^.{1,50}$
-                example: María López
-              relationship:
-                type: string
-                description: >-
-                  Select the relationship with the relative. Options: Cónyuge,
-                  Hijo/Hija, Padre/Madre, Hermano/Hermana, Otro.
-                example: Hermano/Hermana
-              position:
-                type: string
-                description: Specify the relative's position. Maximum 100 characters.
-                maxLength: 100
-                pattern: ^.{1,100}$
-                example: Secretario de Salud
-              department:
-                type: string
-                description: >-
-                  Specify the relative's government department. Maximum 100
-                  characters.
-                maxLength: 100
-                pattern: ^.{1,100}$
-                example: Secretaría de Salud
-        insuredNaturalPerson:
-          type: boolean
-          description: >-
-            Indicate `true` if the insured is an individual with business
-            activities, otherwise `false`.
-        insuredCommercialTies:
-          type: boolean
-          description: >-
-            Indicate `true` if the insured has commercial ties in other
-            countries, otherwise `false`.
-        insuredCommercialTiesCountry:
-          type: string
-          description: >-
-            Specify the country or countries if `insuredCommercialTies` is
-            `true`. Maximum 100 characters.
-          maxLength: 100
-          pattern: ^.{1,100}$
-          example: Brasil, Argentina
-        otherNationalityResidenceContractor:
-          type: boolean
-          description: >-
-            Indicate `true` if the contractor has another nationality or
-            residence, otherwise `false`.
-        otherNationalityResidenceContractorDetails:
-          type: string
-          description: >-
-            Specify the country if `otherNationalityResidenceContractor` is
-            `true`. Maximum 50 characters.
-          maxLength: 50
-          pattern: ^.{1,50}$
-          example: Francia
-        paysTaxesInOtherCountryContractor:
-          type: boolean
-          description: >-
-            Indicate `true` if the contractor pays taxes in another country,
-            otherwise `false`.
-        paysTaxesInOtherCountryContractorDetails:
-          type: string
-          description: >-
-            Specify the country if `paysTaxesInOtherCountryContractor` is
-            `true`. Maximum 50 characters.
-          maxLength: 50
-          pattern: ^.{1,50}$
-          example: Alemania
-        contractorGovernmentPosition:
-          type: boolean
-          description: >-
-            Indicate `true` if the contractor holds or has held a government
-            position, otherwise `false`.
-        governmentPositionDetailsContractor:
-          type: array
-          items:
-            type: object
-            properties:
-              position:
-                type: string
-                description: Specify the contractor's position. Maximum 100 characters.
-                maxLength: 100
-                pattern: ^.{1,100}$
-                example: Embajador
-              department:
-                type: string
-                description: >-
-                  Specify the contractor's government department. Maximum 100
-                  characters.
-                maxLength: 100
-                pattern: ^.{1,100}$
-                example: Secretaría de Relaciones Exteriores
-        contractorRelativesGovernmentPosition:
-          type: boolean
-          description: >-
-            Indicate `true` if the contractor has close relatives with
-            government positions, otherwise `false`.
-        relativesGovernmentPositionDetailsContractor:
-          type: array
-          items:
-            type: object
-            properties:
-              name:
-                type: string
-                description: Specify the relative's name. Maximum 50 characters.
-                maxLength: 50
-                pattern: ^.{1,50}$
-                example: Carlos Gómez
-              relationship:
-                type: string
-                description: >-
-                  Select the relationship with the relative. Options: Cónyuge,
-                  Hijo/Hija, Padre/Madre, Hermano/Hermana, Otro.
-                example: Cónyuge
-              position:
-                type: string
-                description: Specify the relative's position. Maximum 100 characters.
-                maxLength: 100
-                pattern: ^.{1,100}$
-                example: Ministro de Economía
-              department:
-                type: string
-                description: >-
-                  Specify the relative's government department. Maximum 100
-                  characters.
-                maxLength: 100
-                pattern: ^.{1,100}$
-                example: Secretaría de Economía
-        contractorNaturalPerson:
-          type: boolean
-          description: >-
-            Indicate `true` if the contractor is an individual with business
-            activities, otherwise `false`.
-        contractorCommercialTies:
-          type: boolean
-          description: >-
-            Indicate `true` if the contractor has commercial ties in other
-            countries, otherwise `false`.
-        contractorCommercialTiesCountry:
-          type: string
-          description: >-
-            Specify the country or countries if `contractorCommercialTies` is
-            `true`. Maximum 100 characters.
-          maxLength: 100
-          pattern: ^.{1,100}$
-          example: Chile, Perú
-        signedDeclaration:
-          type: boolean
-          description: Must be checked to confirm acting on one's own behalf.
-        acceptedPrivacyNotice:
-          type: boolean
-          description: Must be checked to continue.
-        acceptedTermsConditions:
-          type: boolean
-          description: Must be checked to continue.
-
+        pld_attributes:
+          type: object
+          required:
+            - insured_pays
+            - other_nationality_residence
+            - pays_taxes_in_other_country
+            - insured_government_position
+            - relatives_government_position
+            - insured_natural_person
+            - signed_declaration
+            - accepted_privacy_notice
+            - accepted_terms_conditions
+          properties:
+            declaration_relationship:
+              type: string
+              description: 'Applies if `insured_pays` is `false`. Select the relationship with the contractor. Options: Cónyuge, Hijo/Hija, Padre/Madre, Hermano/Hermana, Otro.'
+              pattern: '^(Cónyuge|Hijo\/Hija|Padre\/Madre|Hermano\/Hermana|Otro)$'
+              example: "Padre/Madre"
+            insured_pays:
+              type: boolean
+              description: 'Indicate `true` if the insured pays the premiums, otherwise `false`.'
+            other_nationality_residence:
+              type: boolean
+              description: 'Indicate `true` if the insured has another nationality or residence, otherwise `false`.'
+            other_nationality_residence_details:
+              type: string
+              description: Specify the country if `other_nationality_residence` is `true`. List of countries.
+              maxLength: 50
+              pattern: '^[A-Za-zÁÉÍÓÚáéíóúÑñ\s,]{1,50}$'
+              example: "Canadá"
+            pays_taxes_in_other_country:
+              type: boolean
+              description: 'Indicate `true` if the insured pays taxes in another country, otherwise `false`.'
+            pays_taxes_in_other_country_details:
+              type: string
+              description: Specify the country if `pays_taxes_in_other_country` is `true`. List of countries.
+              maxLength: 50
+              pattern: '^[A-Za-zÁÉÍÓÚáéíóúÑñ\s,]{1,50}$'
+              example: "Estados Unidos"
+            insured_government_position:
+              type: boolean
+              description: 'Indicate `true` if the insured holds or has held a government position, otherwise `false`.'
+            relatives_government_position:
+              type: boolean
+              description: 'Indicate `true` if the insured has close relatives with government positions, otherwise `false`.'
+            insured_natural_person:
+              type: boolean
+              description: 'Indicate `true` if the insured is an individual with business activities, otherwise `false`.'
+            insured_commercial_ties:
+              type: boolean
+              description: 'Indicate `true` if the insured has commercial ties in other countries, otherwise `false`.'
+            insured_commercial_ties_country:
+              type: string
+              description: Specify the country or countries if `insured_commercial_ties` is `true`. Maximum 100 characters.
+              maxLength: 100
+              pattern: '^[A-Za-zÁÉÍÓÚáéíóúÑñ\s,]{1,100}$'
+              example: "Brasil, Argentina"
+            other_nationality_residence_contractor:
+              type: boolean
+              description: 'Indicate `true` if the contractor has another nationality or residence, otherwise `false`.'
+            other_nationality_residence_contractor_details:
+              type: string
+              description: Specify the country if `other_nationality_residence_contractor` is `true`. Maximum 50 characters.
+              maxLength: 50
+              pattern: '^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{1,50}$'
+              example: "Francia"
+            pays_taxes_in_other_country_contractor:
+              type: boolean
+              description: 'Indicate `true` if the contractor pays taxes in another country, otherwise `false`.'
+            pays_taxes_in_other_country_contractor_details:
+              type: string
+              description: Specify the country if `pays_taxes_in_other_country_contractor` is `true`. Maximum 50 characters.
+              maxLength: 50
+              pattern: '^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{1,50}$'
+              example: "Alemania"
+            contractor_government_position:
+              type: boolean
+              description: 'Indicate `true` if the contractor holds or has held a government position, otherwise `false`.'
+            contractor_relatives_government_position:
+              type: boolean
+              description: 'Indicate `true` if the contractor has close relatives with government positions, otherwise `false`.'
+            contractor_natural_person:
+              type: boolean
+              description: 'Indicate `true` if the contractor is an individual with business activities, otherwise `false`.'
+            contractor_commercial_ties:
+              type: boolean
+              description: 'Indicate `true` if the contractor has commercial ties in other countries, otherwise `false`.'
+            contractor_commercial_ties_country:
+              type: string
+              description: Specify the country or countries if `contractor_commercial_ties` is `true`. Maximum 100 characters.
+              maxLength: 100
+              pattern: '^[A-Za-zÁÉÍÓÚáéíóúÑñ\s,]{1,100}$'
+              example: "Chile, Perú"
+            signed_declaration:
+              type: boolean
+              description: Must be checked to confirm acting on one's own behalf.
+            accepted_privacy_notice:
+              type: boolean
+              description: Must be checked to continue.
+            accepted_terms_conditions:
+              type: boolean
+              description: Must be checked to continue.
+            relatives_government_positions_attributes:
+              type: array
+              description: 'An array of government positions associated with the insured or contractor.'
+              items:
+                type: object
+                required:
+                  - position
+                  - department
+                  - role
+                properties:
+                  name:
+                    type: string
+                    description: Specify the name if applicable. Maximum 50 characters.
+                    maxLength: 50
+                    pattern: '^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{1,50}$'
+                    example: "Carlos Gómez"
+                  relationship:
+                    type: string
+                    description: 'Select the relationship with the relative. Options: Cónyuge, Hijo/Hija, Padre/Madre, Hermano/Hermana, Otro.'
+                    pattern: '^(Cónyuge|Hijo\/Hija|Padre\/Madre|Hermano\/Hermana|Otro)$'
+                    example: "Cónyuge"
+                  position:
+                    type: string
+                    description: Specify the position held. Maximum 100 characters.
+                    maxLength: 100
+                    pattern: '^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{1,100}$'
+                    example: "Ministro de Economía"
+                  department:
+                    type: string
+                    description: Specify the government department. Maximum 100 characters.
+                    maxLength: 100
+                    pattern: '^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{1,100}$'
+                    example: "Secretaría de Economía"
+                  role:
+                    type: string
+                    description: 'Role indicating the type of government position. Allowed values: "insured", "relative", "contractor", "contractor_relative".'
+                    enum:
+                      - insured
+                      - relative
+                      - contractor
+                      - contractor_relative
+                    pattern: '^(insured|relative|contractor|contractor_relative)$'
+                    example: "contractor_relative"
       x-stoplight:
-        id: 6k4rqbnw9g8fn
+        id: yxxxxxx
     BillingDataJSON:
       type: object
       required:
         - amount
-        - policyFolio
+        - policy_folio
         - cardholder
-        - cardNumber
-        - expirationMonth
-        - expirationYear
+        - card_number
+        - expiration_month
+        - expiration_year
         - cvv
       properties:
         amount:
           type: number
-          description: >-
-            The total amount to be billed, including the premium and any
-            additional charges.
-        policyFolio:
+          description: 'The total amount to be billed, including the premium and any additional charges.'
+        policy_folio:
           type: integer
           description: The policy number being billed.
         cardholder:
           type: string
           description: Nombre tal como aparece en la tarjeta. Máximo 50 caracteres.
           maxLength: 50
-          pattern: ^.{1,50}$
+          pattern: '^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{1,50}$'
           example: RODRIGO PEREZ
-        cardNumber:
+        card_number:
           type: string
-          description: >-
-            Número de tarjeta de crédito/débito. Entre 13 y 19 dígitos. Sin
-            espacios ni guiones.
-          pattern: ^\d{13,19}$
+          description: Número de tarjeta de crédito/débito. Entre 13 y 19 dígitos. Sin espacios ni guiones.
+          pattern: '^\d{13,19}$'
           example: '4111111111111111'
-        expirationMonth:
+        expiration_month:
           type: string
           description: Mes de expiración en formato MM. Valores entre 01 y 12.
-          pattern: ^(0[1-9]|1[0-2])$
+          pattern: '^(0[1-9]|1[0-2])$'
           example: '08'
-        expirationYear:
+        expiration_year:
           type: string
           description: Año de expiración en formato AA. Año actual o futuro.
-          pattern: ^\d{2}$
+          pattern: '^\d{2}$'
           example: '25'
         cvv:
           type: string
           description: Código de seguridad de 3 o 4 dígitos según el tipo de tarjeta.
-          pattern: ^\d{3,4}$
+          pattern: '^\d{3,4}$'
           example: '123'
-        pagarSinIntereses:
+        pay_without_interest:
           type: boolean
-          description: >-
-            SOLO SI ES PLAN PREMIUM ANUAL. Indicate `true` to pay in 12 months
-            without interest, otherwise `false`.
-        bancoEmisor:
+          description: 'SOLO SI ES PLAN PREMIUM ANUAL. Indicate `true` to pay in 12 months without interest, otherwise `false`.'
+        issuing_bank:
           type: string
           description: Seleccionar el banco emisor de la tarjeta.
           enum:
@@ -1543,6 +1476,7 @@ components:
         message:
           type: string
           description: A descriptive error message.
+          pattern: '^.{1,255}$'
       required:
         - status
         - message
@@ -1551,36 +1485,46 @@ components:
     OccupationJSON:
       type: object
       properties:
-        id:
+        argos_occupation_id:
           type: integer
-          description: Occupation ID
+          description: Argos Occupation ID
         description:
           type: string
           description: Occupation description
+          pattern: '^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{1,100}$'
         risk:
           type: string
           description: Occupation risk level
           enum:
             - NORMAL
             - SUBNORMAL
+          pattern: '^(NORMAL|SUBNORMAL)$'
+      x-stoplight:
+        id: occupation-schema
     OptionJSON:
       type: object
       properties:
         id:
           type: string
           description: The display name of the option.
+          pattern: '^[A-Za-z0-9\-]{1,50}$'
         value:
           type: string
-          description: The value to be sent or selected, if applicable.
+          description: 'The value to be sent or selected, if applicable.'
+          pattern: '^[A-Za-z0-9\-]{1,50}$'
+      x-stoplight:
+        id: option-schema
     BillingResponseJSON:
       type: object
       properties:
         acceptance:
           type: string
           description: Operation acceptance code.
+          pattern: '^[A-Za-z0-9]{1,50}$'
         authorization:
           type: string
           description: Operation authorization code.
+          pattern: '^[A-Za-z0-9]{1,50}$'
         status:
           type: object
           properties:
@@ -1590,22 +1534,31 @@ components:
             message:
               type: string
               description: Detailed message of the operation status.
-            errorType:
+              pattern: '^.{1,255}$'
+            error_type:
               type: string
-              description: Type of error that occurred, if applicable.
-        amountCharged:
+              description: 'Type of error that occurred, if applicable.'
+              pattern: '^[A-Za-z0-9\-]{0,50}$'
+          required:
+            - status
+        amount_charged:
           type: number
           format: float
           description: Total amount charged in the operation.
         operation:
           type: string
           description: Operation code or description.
+          pattern: '^[A-Za-z0-9\s\-]{1,100}$'
         reference:
           type: string
           description: Operation reference.
+          pattern: '^[A-Za-z0-9\-]{1,100}$'
         card:
           type: string
           description: Card number involved in the operation.
+          pattern: '^\d{13,19}$'
+      x-stoplight:
+        id: billing-response-schema
     GetPlansResponse:
       type: object
       properties:
@@ -1619,13 +1572,15 @@ components:
         id:
           type: string
           example: '001'
-        productName:
+          pattern: '^\d{3}$'
+        product_name:
           type: string
           example: BASIC_001
-        fullName:
+        full_name:
           type: string
-          example: Standard Basic Plan
-        paymentMethods:
+          example: Basico
+          pattern: '^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{1,50}$'
+        payment_methods:
           type: array
           items:
             $ref: '#/components/schemas/Premium'
@@ -1636,9 +1591,9 @@ components:
     Premium:
       type: object
       properties:
-        paymentMethod:
+        payment_method:
           type: string
-          example: Monthly
+          example: MENSUAL
         premium:
           type: number
           example: 250
@@ -1648,7 +1603,8 @@ components:
         name:
           type: string
           example: Health
-        insuredAmount:
+          pattern: '^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{1,100}$'
+        insured_amount:
           type: number
           example: 50000
     PostalCodeLookupResponseJSON:
@@ -1656,37 +1612,42 @@ components:
       required:
         - municipality
         - city
-        - state
+        - state_address
         - country
         - neighborhoods
       properties:
         municipality:
           type: string
           description: The municipality corresponding to the postal code.
+          pattern: '^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{1,100}$'
           example: Nezahualcoyotl
         city:
           type: string
           description: The city corresponding to the postal code.
+          pattern: '^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{1,100}$'
           example: Nezahualcoyotl
-        state:
+        state_address:
           type: string
           description: The state corresponding to the postal code.
+          pattern: '^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{1,100}$'
           example: Mexico
         country:
           type: string
           description: The country corresponding to the postal code.
+          pattern: '^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{1,100}$'
           example: Mexico
         neighborhoods:
           type: array
           description: An array of neighborhoods associated with the postal code.
           items:
             type: string
+            pattern: '^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{1,100}$'
             example: Benito Juarez
     ProcessPolicyResponse:
       type: object
       properties:
-        policyFolio:
+        policy_folio:
           type: integer
           description: The folio number of the processed policy.
       required:
-        - policyFolio
+        - policy_folio

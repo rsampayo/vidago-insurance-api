@@ -1,131 +1,105 @@
 // controllers/policyController.js
 const { v4: uuidv4 } = require('uuid');
 
-// In-memory storage for policies
+// In-memory storage for policies (for dummy purposes)
 const policies = {};
 
 /**
- * Initiates a new policy registration session.
- * Generates a unique policyId and stores it in the in-memory policies object.
- *
- * @param {Object} req - Express request object
- * @param {Object} res - Express response object
+ * Initiates a new policy registration process.
+ * POST /api/v1/policy/initiate
  */
 exports.initiatePolicy = (req, res) => {
   const policyId = uuidv4();
   policies[policyId] = {
     steps: {},
+    processed: false,
   };
-  res.status(201).json({ policyId });
+  res.status(201).json({ policy_id: policyId });
 };
 
 /**
- * Submits data for a specific policy registration step.
- *
- * @param {Object} req - Express request object
- * @param {Object} res - Express response object
+ * Submits data for a specific policy step.
+ * PATCH /api/v1/policy/:policy_id/step/:stepNumber
  */
 exports.submitPolicyStep = (req, res) => {
-  const { policyId, stepNumber } = req.params;
+  const { policy_id, stepNumber } = req.params;
   const stepData = req.body;
 
-  if (!policies[policyId]) {
-    return res.status(404).json({ status: false, message: 'Policy ID not found' });
+  if (!policies[policy_id]) {
+    return res.status(404).json({ status: false, message: 'Policy not found.' });
   }
 
-  const stepKey = `step${stepNumber}`;
-  policies[policyId].steps[stepKey] = stepData;
-  res.json({ message: `Step ${stepNumber} submitted successfully` });
+  // Validate stepNumber is between 1 and 7
+  const stepNum = parseInt(stepNumber, 10);
+  if (isNaN(stepNum) || stepNum < 1 || stepNum > 7) {
+    return res.status(400).json({ status: false, message: 'Invalid step number.' });
+  }
+
+  // Store the step data
+  policies[policy_id].steps[`step${stepNumber}`] = stepData;
+  res.status(200).json({ message: `Step ${stepNumber} submitted successfully.` });
 };
 
 /**
- * Retrieves data for a specific policy registration step.
- *
- * @param {Object} req - Express request object
- * @param {Object} res - Express response object
+ * Retrieves data for a specific policy step.
+ * GET /api/v1/policy/:policy_id/step/:stepNumber
  */
 exports.getPolicyStep = (req, res) => {
-  const { policyId, stepNumber } = req.params;
+  const { policy_id, stepNumber } = req.params;
 
-  if (!policies[policyId]) {
-    return res.status(404).json({ status: false, message: 'Policy ID not found' });
+  if (!policies[policy_id]) {
+    return res.status(404).json({ status: false, message: 'Policy not found.' });
   }
 
-  const stepData = policies[policyId].steps[`step${stepNumber}`];
+  const stepData = policies[policy_id].steps[`step${stepNumber}`];
   if (!stepData) {
-    return res.status(404).json({ status: false, message: `Step ${stepNumber} data not found` });
+    return res.status(404).json({ status: false, message: `Step ${stepNumber} data not found.` });
   }
 
-  res.json(stepData);
+  res.status(200).json(stepData);
 };
 
 /**
- * Retrieves data for policy registration steps 1 to 5.
- *
- * @param {Object} req - Express request object
- * @param {Object} res - Express response object
+ * Retrieves data for steps 1 to 5 of a policy.
+ * GET /api/v1/policy/:policy_id/steps
  */
 exports.getPolicySteps1to5 = (req, res) => {
-  const { policyId } = req.params;
+  const { policy_id } = req.params;
 
-  if (!policies[policyId]) {
-    return res.status(404).json({ status: false, message: 'Policy ID not found' });
+  if (!policies[policy_id]) {
+    return res.status(404).json({ status: false, message: 'Policy not found.' });
   }
 
-  const { step1, step2, step3, step4, step5 } = policies[policyId].steps;
+  const steps = {};
+  for (let i = 1; i <= 5; i++) {
+    const stepData = policies[policy_id].steps[`step${i}`];
+    if (stepData) {
+      steps[`step${i}`] = stepData;
+    }
+  }
 
-  res.json({
-    step1,
-    step2,
-    step3,
-    step4,
-    step5,
-  });
+  res.status(200).json(steps);
 };
 
 /**
- * Processes the policy registration and returns the policyFolio number upon success.
- * Validates that all required steps are completed before processing.
- *
- * @param {Object} req - Express request object
- * @param {Object} res - Express response object
+ * Processes a policy and generates a policy folio.
+ * PATCH /api/v1/policy/:policy_id/process
  */
 exports.processPolicy = (req, res) => {
-  const { policyId } = req.params;
+  const { policy_id } = req.params;
 
-  // Check if the policy exists
-  if (!policies[policyId]) {
-    return res.status(404).json({ status: false, message: 'Policy ID not found' });
+  if (!policies[policy_id]) {
+    return res.status(404).json({ status: false, message: 'Policy not found.' });
   }
 
-  const policy = policies[policyId];
-
-  // Define required steps for processing
-  const requiredSteps = ['step1', 'step2', 'step3', 'step4', 'step5', 'step6', 'step7'];
-
-  // Identify any missing steps
-  const missingSteps = requiredSteps.filter(step => !policy.steps[step]);
-
-  if (missingSteps.length > 0) {
-    return res.status(400).json({
-      status: false,
-      message: `Cannot process policy. Missing steps: ${missingSteps.join(', ')}`,
-    });
+  if (policies[policy_id].processed) {
+    return res.status(400).json({ status: false, message: 'Policy already processed.' });
   }
 
-  // Check if the policy has already been processed
-  if (policy.policyFolio) {
-    return res.status(400).json({
-      status: false,
-      message: 'Policy has already been processed.',
-    });
-  }
+  // Simulate processing and generate policy folio
+  const policyFolio = Math.floor(1000000000 + Math.random() * 9000000000);
+  policies[policy_id].processed = true;
+  policies[policy_id].policy_folio = policyFolio;
 
-  // Generate a unique policyFolio number (e.g., a random 6-digit number)
-  const policyFolio = Math.floor(100000 + Math.random() * 900000);
-
-  // Assign the policyFolio to the policy
-  policy.policyFolio = policyFolio;
-
-  res.json({ policyFolio });
+  res.status(200).json({ policy_folio: policyFolio });
 };
